@@ -1,7 +1,9 @@
 import os
 import json
 import urllib3
-from icalendar import Calendar, Event
+import datetime
+import time
+from icalendar import Calendar, Event, vDDDTypes
 
 
 if __name__ == '__main__':
@@ -20,4 +22,6 @@ if __name__ == '__main__':
     cal = Calendar.from_ical(rawIcs)
 
     for event in cal.walk() :
-        print event.get('dtstart')
+        t = event.get('dtstart')
+        if (t is not None):
+            print t.from_ical(t)
