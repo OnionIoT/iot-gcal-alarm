@@ -1,6 +1,7 @@
 import os
 import json
 import urllib3
+from datetime import datetime
 from crontab import CronTab
 from icalendar import Calendar, Event, vDDDTypes
 
@@ -20,38 +21,29 @@ if __name__ == '__main__':
 
     # converting the calendar to readable format
     cal = Calendar.from_ical(rawIcs)
-    print cal
 
+    cron = CronTab(user='root')
 
-    # cron = CronTab(user='root')
+    # check the time for reference
+    timeNow = datetime.now()
 
     for event in cal.walk() :
-        timeRaw = event.get ('dtstart')
+        timeIcsRaw = event.get ('dtstart')
+        timeOfEvent = timeIcsRaw.from_ical(timeIcsRaw)
         summary = event.get ('summary')
 
         # this variable will contain recurrance rules of the event
-        recurrance = event.get ('rrule')
-        print summary
+        # recurrance = event.get ('rrule')
 
         # the keyword used to detect which events need a buzzer is 'SET_BUZZER'
         if (summary is not None):
-            if (summary.find ('SET_BUZZER') is not -1):
-                t = timeRaw.split (' ')
+            if (summary.find ('SET_BUZZER') is not -1): # checks for the keyword
+                if (timeNow < timeOfEvent):             # make sure event is in the future
+                    job = cron.new (command='/bin/sh /root/alarm.sh')
+                    job.setall(timeOfEvent)
+                else:                                   # lazy way to remove uneeded entries
+                    cron.remove_all(time = timeOfEvent.minute + timeOfEvent.hour + timeOfEvent.day + timeOfEvent.month)
 
-                date = t[0].split ('-')
-                month = int (date[1])
-                day = int (date[2])
 
-                time = t[1].split ('+')
-                time = time.split (':')
-                hour = int (time[0])
-                minute = int (time[1])
-
-            #     job = cron.new (command='/usr/bin/echo gpioctl dirout-high 13')
-            #     job.month.on (month)
-            #     job.day.on (day)
-            #     job.hour.on (hour)
-            #     job.minute.on (minute)
-            #     job.write()
-
+    cron.write()
 
