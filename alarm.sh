@@ -1,6 +1,6 @@
 #!/bin/sh
-gpioctl dirout-high 13
-sleep 60
-gpioctl dirout-low 13
+gpioctl dirout-high 1
+sleep 15
+gpioctl dirout-low 1
 
 
