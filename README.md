@@ -7,6 +7,7 @@ This project sets up a service on the Omega to check an online calendar, and set
 * Buzzer circuit
 * pip
 * Python packages:
+	* setuptools
 	* urllib3, python-crontab, icalendar
 
 ## Setup
